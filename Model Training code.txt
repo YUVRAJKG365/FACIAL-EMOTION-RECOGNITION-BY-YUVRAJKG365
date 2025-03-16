@@ -1,0 +1,133 @@
+import os
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from sklearn.metrics import classification_report, confusion_matrix
+import numpy as np
+
+# Define paths for train and test datasets
+data_dir = 'C:\\Users\\yuvra\\Documents\\pp'
+train_dir = os.path.join(data_dir, 'train')  # Training data folder
+test_dir = os.path.join(data_dir, 'test')   # Testing data folder
+
+# Check if train and test directories exist
+if not os.path.exists(train_dir) or not os.path.exists(test_dir):
+    print(f"Error: Dataset directories not found at {train_dir} or {test_dir}")
+    exit()
+
+# List all emotion classes
+emotion_classes = os.listdir(train_dir)
+print("Emotion Classes:", emotion_classes)
+
+# Verify paths for train and test datasets
+for emotion_class in emotion_classes:
+    train_class_path = os.path.join(train_dir, emotion_class)
+    test_class_path = os.path.join(test_dir, emotion_class)
+    print(f"Train Path for {emotion_class}: {train_class_path}")
+    print(f"Test Path for {emotion_class}: {test_class_path}")
+
+# Data Augmentation for Train and Test
+train_data_gen = ImageDataGenerator(
+    rescale=1.0 / 255.0,
+    rotation_range=30,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    fill_mode='nearest',
+    validation_split=0.2  # Used for separating training and validation data
+)
+
+test_data_gen = ImageDataGenerator(rescale=1.0 / 255.0)  # Only rescale for testing
+
+# Load Train Data
+train_data = train_data_gen.flow_from_directory(
+    train_dir,
+    target_size=(48, 48),
+    batch_size=32,
+    class_mode='categorical',
+    subset='training'  # Ensures this is used as training data
+)
+
+# Load Validation Data (from Train)
+val_data = train_data_gen.flow_from_directory(
+    train_dir,
+    target_size=(48, 48),
+    batch_size=32,
+    class_mode='categorical',
+    subset='validation'  # Ensures this is used as validation data
+)
+
+# Load Test Data
+test_data = test_data_gen.flow_from_directory(
+    test_dir,
+    target_size=(48, 48),
+    batch_size=32,
+    class_mode='categorical',
+    shuffle=False  # Do not shuffle test data
+)
+
+# Step 2: Model Architecture
+model = models.Sequential([
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(48, 48, 3)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(128, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Flatten(),
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.5),  # Added dropout to reduce overfitting
+    layers.Dense(len(train_data.class_indices), activation='softmax')
+])
+
+# Step 3: Compile the Model
+model.compile(
+    optimizer='adam',
+    loss='categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# Step 4: Add Callbacks (EarlyStopping and ModelCheckpoint)
+checkpoint = ModelCheckpoint(
+    'best_model.keras', monitor='val_loss', verbose=1, save_best_only=True, mode='min'
+)
+callbacks = [EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True), checkpoint]
+
+# Step 5: Train the Model
+history = model.fit(
+    train_data,
+    epochs=50,
+    validation_data=val_data,
+    callbacks=callbacks
+)
+
+# Step 6: Evaluate on Test Data
+print("\nEvaluating on Test Data:")
+test_loss, test_acc = model.evaluate(test_data)
+print(f"Test Loss: {test_loss}")
+print(f"Test Accuracy: {test_acc}")
+
+# Step 7: Generate Test Data Report
+y_true = test_data.classes  # True labels
+y_pred = np.argmax(model.predict(test_data), axis=-1)  # Predicted labels
+print("\nClassification Report:")
+print(classification_report(y_true, y_pred, target_names=list(test_data.class_indices.keys())))
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_true, y_pred))
+
+# Step 8: Save the Model in .keras Format
+model_path = r'C:/Users/yuvra/Documents/pp/yuvrajkgd_model.keras'
+
+# Ensure the save directory exists before saving the model
+model_dir = os.path.dirname(model_path)
+if not os.path.exists(model_dir):
+    os.makedirs(model_dir)
+
+model.save(model_path)
+print(f"Model saved in .keras format at {model_path}")
+
+# You can add new data for future training by creating new datasets and retraining the model. 
+# Example: When new data is available, append to the dataset and retrain using the new data.
