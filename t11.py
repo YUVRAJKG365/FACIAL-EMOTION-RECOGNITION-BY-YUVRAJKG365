@@ -87,3 +87,9 @@ try:
     print(f"Model successfully saved at {model_save_path}")
 except Exception as e:
     print(f"Error during training: {e}")
+
+
+
+# Proprietary License - All Rights Reserved
+# Copyright (C) 2025 Yuvraj Kumar Gond
+# Unauthorized copying or distribution of this file is strictly prohibited.
