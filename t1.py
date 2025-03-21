@@ -175,3 +175,10 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+# Proprietary License - All Rights Reserved
+# Copyright (C) 2025 Yuvraj Kumar Gond
+# Unauthorized copying or distribution of this file is strictly prohibited.
+
