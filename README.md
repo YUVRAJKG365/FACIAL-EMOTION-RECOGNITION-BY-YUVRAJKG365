@@ -109,50 +109,6 @@ The **Facial Emotion Recognition System** is designed to accurately detect and c
 
 ---
 
-## 🚀 How to Use the Model
-
-### 1️⃣ Clone the Repository
-```bash
-git clone https://github.com/your-github-username/Facial-Emotion-Recognition.git
-cd Facial-Emotion-Recognition
-2️⃣ Install Dependencies
-bash
-Copy
-Edit
-pip install tensorflow numpy opencv-python scikit-learn matplotlib pillow
-3️⃣ Run the Model for Emotion Detection
-bash
-Copy
-Edit
-python emotion_detection.py
-4️⃣ Train the Model with New Data (Optional)
-Add new images to the train/ directory
-
-Then run:
-
-bash
-Copy
-Edit
-python train_model.py
-5️⃣ Launch the GUI for Emotion Detection
-bash
-Copy
-Edit
-python gui_emotion_recognition.py
-🤝 Acknowledgment
-💡 Concept & Development: Yuvraj Kumar Gond
-🤖 AI/ML Support: ChatGPT
-📂 Dataset Used: FER 2013 from Kaggle
-👨‍🏫 Internship Mentor: (Insert Mentor’s Name)
-🏢 Internship Company: ShadowFox Company (Bengaluru & Sydney)
-
-📞 Connect With Me!
-💼 LinkedIn: Yuvraj Kumar Gond
-
-📧 Email: yuviig456@gmail.com
-
-⭐ If you find this project helpful, don’t forget to star the repo on GitHub!
-
 ## 🚫 Usage Restrictions
 
 **IMPORTANT:**
@@ -169,5 +125,3 @@ If you are interested in building your own portfolio, please create your own des
 
 ---
 
-## 📩 Contact
-+91 8487047066
